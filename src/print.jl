@@ -41,3 +41,19 @@ function iteration_status(
         penalty,
         step_size)
 end
+
+function print_head()
+    print(crayon"bold cyan", "\n\nSolving with IterativeLQR...\n\n", crayon"reset")
+    @printf "-----------------------------------------------------------------\n"
+    @printf "%6s %6s %12s %12s %12s %12s\n" "outer" "inner" "cost" "grad_norm" "max_viol" "step_size"
+    @printf "-----------------------------------------------------------------\n"
+end
+
+function print_foot()
+    @printf "-----------------------------------------------------------------\n"
+    print(crayon"bold green", "\n...problem solved!\n\n", crayon"reset")
+end
+
+function print_iter(out_iter,in_iter,cost,grad_norm,max_viol,step_size)
+    @printf "%6d %6d %12.3e %12.3e %12.3e %12.3e\n" out_iter in_iter cost grad_norm max_viol step_size
+end

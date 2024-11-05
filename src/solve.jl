@@ -1,7 +1,7 @@
-function ilqr_solve!(solver::Solver; 
+function ilqr_solve!(solver::Solver;
     iteration=true)
 
-    (solver.options.verbose && iteration==1) && solver_info()
+    # (solver.options.verbose && iteration==1) && solver_info()
 
 	# data
 	policy = solver.policy
@@ -37,12 +37,13 @@ function ilqr_solve!(solver::Solver;
 
         # info
         data.iterations[1] += 1
-        solver.options.verbose && println(
-            "iter:                  $i
-             cost:                  $(data.objective[1])
-			 gradient_norm:         $(gradient_norm)
-			 max_violation:         $(data.max_violation[1])
-			 step_size:             $(data.step_size[1])")
+        solver.options.verbose && print_iter(iteration,i,data.objective[1],gradient_norm,data.max_violation[1],data.step_size[1])
+        # solver.options.verbose && println(
+        #     "iter:                  $i
+        #      cost:                  $(data.objective[1])
+		# 	 gradient_norm:         $(gradient_norm)
+		# 	 max_violation:         $(data.max_violation[1])
+		# 	 step_size:             $(data.step_size[1])")
 
         # check convergence
 		gradient_norm < solver.options.lagrangian_gradient_tolerance && break
@@ -87,7 +88,7 @@ end
 """
 function constrained_ilqr_solve!(solver::Solver; augmented_lagrangian_callback!::Function=x->nothing)
 
-	solver.options.verbose && solver_info()
+	# solver.options.verbose && solver_info()
 
     # reset solver cache
     reset!(solver.data)
@@ -103,10 +104,10 @@ function constrained_ilqr_solve!(solver::Solver; augmented_lagrangian_callback!:
 	end
 
 	for i = 1:solver.options.max_dual_updates
-		solver.options.verbose && println("  al iter: $i")
+		# solver.options.verbose && println("  al iter: $i")
 
 		# primal minimization
-		ilqr_solve!(solver, 
+		ilqr_solve!(solver,
             iteration=i)
 
 		# update trajectories
@@ -135,9 +136,13 @@ function constrained_ilqr_solve!(solver::Solver, states, actions; kwargs...)
 end
 
 function solve!(solver::Solver{T,N,M,NN,MM,MN,NNN,MNN,X,U,D,O}, args...; kwargs...) where {T,N,M,NN,MM,MN,NNN,MNN,X,U,D,O<:Objective{T}}
+    solver.options.verbose && print_head()
     ilqr_solve!(solver, args...; kwargs...)
+    solver.options.verbose && print_foot()
 end
 
 function solve!(solver::Solver{T,N,M,NN,MM,MN,NNN,MNN,X,U,D,O}, args...; kwargs...) where {T,N,M,NN,MM,MN,NNN,MNN,X,U,D,O<:AugmentedLagrangianCosts{T}}
+    solver.options.verbose && print_head()
     constrained_ilqr_solve!(solver, args...; kwargs...)
+    solver.options.verbose && print_foot()
 end
