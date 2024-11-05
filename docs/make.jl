@@ -19,6 +19,6 @@ makedocs(
     ]
 )
 
-deploydocs(
-    repo = "github.com/thowell/IterativeLQR.jl.git",
-)
+# deploydocs(
+#     repo = "github.com/thowell/IterativeLQR.jl.git",
+# )
